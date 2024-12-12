@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <title>Weather Forecast</title>
+  <style>
+    
+  </style>
+</head>
+<body>
+  <h1>Weather Forecast</h1>
+  <div class="container">
+    <div class="form-group">
+      <input type="text" id="cityInput" placeholder='Enter Location (e.g., "Sungai Petani")'>
+      <button onclick="fetchWeatherForecast()">Get Forecast</button>
+      <button onclick="renderLineChart()">Display in Line Chart</button>
+    </div>
+    <div id="weatherOutput"></div>
+    <div class="chart-container">
+      <canvas id="weatherChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+   
+  </script>
+</body>
+</html>
