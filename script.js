@@ -1,73 +1,73 @@
-let forecastData = []; // To store forecast data for the table and chart
+let forecastDetails = []; // Store forecast data for table and chart
 
-function fetchWeatherForecast() {
-  city = document.getElementById("cityInput").value.trim();
-  if (!city) {
+async function fetchWeatherData() {
+  const location = document.getElementById("locationInput").value.trim();
+  if (!location) {
     alert("Please enter a location!");
     return;
   }
 
-  apiUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=30e52533ca372f94ab93eaba6b98bbc4`;
+  const weatherApiUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=30e52533ca372f94ab93eaba6b98bbc4`;
 
   try {
-    response = fetch(apiUrl);
-    data = response.json();
+    const response = await fetch(weatherApiUrl);
+    const weatherData = await response.json();
 
-    if (data.cod !== "200") {
-      throw new Error(data.message || "City not found");
+    if (weatherData.cod !== "200") {
+      throw new Error(weatherData.message || "City not found");
     }
 
     // Extract forecast data for the next 24 hours (8 intervals)
-    forecastData = data.list.slice(0, 8).map(item => ({
-      dateTime: item.dt_txt,
-      temperature: (item.main.temp - 273.15).toFixed(2), // Convert Kelvin to Celsius
-      weatherDescription: item.weather[0].description,
+    forecastDetails = weatherData.list.slice(0, 8).map(entry => ({
+      dateTime: entry.dt_txt,
+      tempCelsius: (entry.main.temp - 273.15).toFixed(2), // Kelvin to Celsius
+      weatherDesc: entry.weather[0].description,
     }));
 
     // Populate the table
-    tableRows = forecastData.map(item => `
+    const tableContent = forecastDetails.map(detail => `
       <tr>
-        <td>${item.dateTime}</td>
-        <td>${item.temperature} °C</td>
-        <td>${item.weatherDescription}</td>
+        <td>${detail.dateTime}</td>
+        <td>${detail.tempCelsius} °C</td>
+        <td>${detail.weatherDesc}</td>
       </tr>
     `).join("");
 
-    document.getElementById("weatherOutput").innerHTML = `
+    document.getElementById("forecastOutput").innerHTML = `
       <table>
         <tr>
           <th>Date-Time</th>
           <th>Temperature (°C)</th>
           <th>Weather Description</th>
         </tr>
-        ${tableRows}
+        ${tableContent}
       </table>
     `;
   } catch (error) {
-    document.getElementById("weatherOutput").innerHTML = `
+    document.getElementById("forecastOutput").innerHTML = `
       <div class="error">Error: ${error.message}</div>
     `;
   }
 }
 
-function renderLineChart() {
-  if (!forecastData.length) {
+function generateWeatherChart() {
+  if (!forecastDetails.length) {
     alert("Please fetch weather data first!");
     return;
   }
 
-  ctx = document.getElementById("weatherChart").getContext("2d");
-  labels = forecastData.map(item => item.dateTime);
-  temperatures = forecastData.map(item => item.temperature);
+  const chartContext = document.getElementById("forecastChart").getContext("2d");
+  const dateTimeLabels = forecastDetails.map(detail => detail.dateTime);
+  const tempData = forecastDetails.map(detail => detail.tempCelsius);
 
-  new Chart(ctx, {
+  new Chart(chartContext, {
     type: "line",
     data: {
-      labels: labels,
+      labels: dateTimeLabels,
       datasets: [
         {
           label: "Temperature (°C)",
-          data: temperatures,
+          data: tempData,
           borderColor: "rgba(75, 192, 192, 1)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           borderWidth: 2,
